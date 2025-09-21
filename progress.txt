@@ -1,0 +1,17 @@
+1. Pull the latest SQL Server Docker image:
+docker pull mcr.microsoft.com/mssql/server:2022-latest
+
+
+2. run the sql server container
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=YourPassword123" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2022-latest
+
+3. verify the container 
+docker ps
+
+4 Connect to SQL Server
+sqlcmd -S localhost -U sa -P YourPassword123
+
+5. run migrations in api
+
+6. update database 
+
