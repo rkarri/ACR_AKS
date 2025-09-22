@@ -9,7 +9,7 @@ docker pull mcr.microsoft.com/mssql/server:2022-latest
 docker ps
 
 4 Connect to SQL Server
-sqlcmd -S localhost -U sa -P YourPassword123
+
 
 5. run migrations in api
 
