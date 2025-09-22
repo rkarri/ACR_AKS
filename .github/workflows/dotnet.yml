@@ -21,8 +21,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ACR_AKS/ACR_AKS.sln
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build ACR_AKS/ACR_AKS.sln --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test ACR_AKS/ACR_AKS.sln --no-build --verbosity normal
