@@ -1,29 +1,21 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
-# This stage is used to build the service project
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["RaviK.CICD.API.csproj", "RaviK.CICD.API/"]
-RUN dotnet restore "RaviK.CICD.API/RaviK.CICD.API.csproj"
-COPY . RaviK.CICD.API/
-WORKDIR "/src/RaviK.CICD.API/"
-RUN dotnet build "RaviK.CICD.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# This stage is used to publish the service project to be copied to the final stage
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "RaviK.CICD.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Copy csproj and restore
+COPY ["ACR_AKS/WebApplication1/RaviK.CICD.API.csproj", "WebApplication1/"]
+RUN dotnet restore "WebApplication1/RaviK.CICD.API.csproj"
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
-FROM base AS final
+# Copy everything else
+COPY . .
+WORKDIR "/src/ACR_AKS/WebApplication1"
+RUN dotnet build "RaviK.CICD.API.csproj" -c Release -o /app/build
+
+# Publish
+RUN dotnet publish "RaviK.CICD.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "RaviK.CICD.API.dll"]
